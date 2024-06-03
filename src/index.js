@@ -2,10 +2,26 @@ const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const handlebars = require('express-handlebars');
+const bodyParser = require('body-parser');
+
 const app = express();
-const port = 3000;
+
+app.use(bodyParser.json());
+
+app.use(
+    express.urlencoded({
+        extended: true,
+    }),
+);
+app.use(express.json());
+
+const port = 3030;
 
 const route = require('./routes');
+const db = require('./config/db');
+
+// Connect to Db
+db.connect();
 
 app.use(express.static(path.join(__dirname, 'public')));
 //HTTP logger
@@ -19,13 +35,12 @@ app.engine(
         extname: '.hbs',
     }),
 );
-        app.set('view engine', 'hbs');
-                  app.set('views', path.join(__dirname, 'resources', 'views'));
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'resources', 'views'));
 
-// Route init
 // Route init
 route(app);
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
+    console.log(`App listening on port ${port}`);
 });
